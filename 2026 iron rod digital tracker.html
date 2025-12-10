@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026 Iron Rod Digital Scripture Tracker</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            padding: 30px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #4a5568;
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .header p {
+            color: #718096;
+            margin: 5px 0;
+        }
+
+		 .buttons {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			gap: 20px;
+			margin: 20px auto;   /* centers the whole button row */
+			width: fit-content;  /* shrinks wrapper to the width of buttons */
+		}
+
+
+
+
+        .btn {
+            padding: 10px 20px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .btn-print {
+            background: #1A9850; /* Deep Green */
+            color: white;
+        }
+
+        .btn-print:hover {
+            background: #157a40;
+        }
+
+        .btn-reset {
+            background: #D9534F; /* Caution Red */
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background: #c0392b;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 10px;
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #4a5568;
+            margin: 0;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #718096;
+            margin: 5px 0 0 0;
+        }
+
+        .tracker-grid {
+            margin: 30px 0;
+        }
+
+        .week-row {
+            display: grid;
+            grid-template-columns: 50px repeat(7, 1fr);
+            gap: 3px;
+            margin-bottom: 5px;
+        }
+
+        .week-header {
+            display: grid;
+            grid-template-columns: 50px repeat(7, 1fr);
+            gap: 3px;
+            margin-bottom: 10px;
+        }
+
+        .header-cell, .week-number, .day-cell {
+            padding: 8px;
+            text-align: center;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+
+        .header-cell {
+			background: #3C3F91; /* Deep Indigo */
+			color: white;
+			font-weight: bold;
+		}
+
+        .week-number {
+            background: #DCE1E7; /* Soft Granite Gray */
+			color: #3C3F91;
+			font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .day-cell {
+             background: #EAF3FF; /* Light Celestial Blue */
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .day-cell:hover {
+            background: #E7B10A; /* Liahona Gold */
+			color: white;
+			border-color: #B8860B;
+        }
+
+        .day-cell.completed {
+            background: #DAA520;
+            color: white;
+            border-color: #B8860B;
+        }
+
+        .instructions {
+            background: #edf2f7;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+
+        .instructions h3 {
+            color: #2d3748;
+            margin-top: 0;
+        }
+
+        .instructions ul {
+            color: #4a5568;
+            line-height: 1.6;
+        }
+
+        .monthly-theme {
+            background: linear-gradient(45deg, #3C3F91, #5E5EF7); /* Indigo gradient */
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+			font-size: 15px;
+			line-height: 1.4;
+        }
+
+		/* Badge Bar ---------------------------------------------- */
+		.badge-bar {
+			margin: 20px auto;
+			text-align: center;
+			padding: 12px 20px;
+			border-radius: 10px;
+			background: #f0f4ff;
+			font-size: 18px;
+			font-weight: bold;
+			color: #3C3F91;
+			display: flex;
+			justify-content: center;
+			gap: 10px;
+			align-items: center;
+			transition: all 0.3s ease;
+		}
+		.badge-bar.hidden {
+			display: none;
+		}
+
+		#badgeIcon {
+			font-size: 24px;
+		}
+
+		/* Dark Mode */
+		.dark-mode .badge-bar {
+			background: #2e3266;
+			color: #e1e4ff;
+		}
+
+
+        @media print {
+            body { background: white; }
+            .container { box-shadow: none; }
+            .buttons { display: none; }
+        }
+		
+		/* Dark Mode ----------------------------------------- */
+		.dark-mode {
+			background: #1c1e26 !important;
+			color: #f1f1f1 !important;
+		}
+
+		.dark-mode .container {
+			background: #2a2d37;
+			box-shadow: 0 5px 20px rgba(255,255,255,0.05);
+		}
+
+		.dark-mode .stat-box {
+			background: #3a3d47;
+			color: white;
+		}
+
+		.dark-mode .monthly-theme {
+			background: linear-gradient(45deg, #23244d, #3638a5);
+		}
+
+		.dark-mode .header-cell {
+			background: #2e3266;
+		}
+
+		.dark-mode .day-cell {
+			background: #4a4f63;
+			color: #f1f1f1;
+		}
+
+		.dark-mode .day-cell.completed {
+			background: #b78e0a;
+			color: black;
+		}
+
+		.dark-mode .btn-print {
+			background: #157a40;
+		}
+
+		.dark-mode .btn-reset {
+			background: #a5423f;
+		}
+
+		.dark-mode .btn-darkmode {
+			background: #444b5e;
+			color: white;
+		}
+		
+		@media (max-width: 600px) {
+
+		/* Make the grid scrollable instead of shrinking to unusable size */
+		.tracker-grid {
+			overflow-x: auto;
+			padding-bottom: 10px;
+		}
+
+		.week-header,
+		.week-row {
+			width: 800px; /* Fixed readable layout, scrolls horizontally */
+		}
+
+		/* Buttons stack cleanly */
+		.buttons {
+			flex-wrap: wrap;
+			width: 100%;
+			gap: 10px;
+		}
+
+		.btn {
+			width: 100%;
+			text-align: center;
+		}
+
+		/* Reduce header and stat text sizes */
+		.header h1 {
+			font-size: 22px;
+		}
+
+		.stat-number {
+			font-size: 22px;
+		}
+	}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📖 2026 Iron Rod Digital Scripture Tracker</h1>
+            <p>Track your daily scripture reading journey</p>
+        </div>
+
+    <div class="buttons">
+		<button class="btn btn-print" onclick="window.print()">🖨 PRINT TRACKER</button>
+		<button class="btn btn-reset" onclick="resetTracker()">🔄 RESET ALL</button>
+		<button id="darkModeToggle" class="btn btn-darkmode">🌙 Dark Mode</button>
+	</div>
+
+
+
+        <div class="stats">
+            <div class="stat-box">
+                <div class="stat-number" id="daysCompleted">0</div>
+                <div class="stat-label">Days Completed</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" id="currentStreak">0</div>
+                <div class="stat-label">Current Streak</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" id="longestStreak">0</div>
+                <div class="stat-label">Longest Streak</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" id="yearComplete">0%</div>
+                <div class="stat-label">Year Complete</div>
+            </div>
+        </div>
+
+		<!-- Badge Bar -->
+		<div class="badge-bar hidden">
+			<span id="badgeIcon">⏳</span>
+			<span id="badgeText">Keep going — streak building!</span>
+		</div>
+
+        <div class="monthly-theme">
+			<p><strong>Strengthen your walk and hold fast to the Iron Rod through steady daily scripture study.</strong><br>
+			Mark your progress, build your streak, and let small, consistent efforts shape a lasting testimony.</p>
+		</div>
+
+        <div class="tracker-grid">
+            <div class="week-header">
+                <div class="header-cell">Week</div>
+                <div class="header-cell">Sun</div>
+                <div class="header-cell">Mon</div>
+                <div class="header-cell">Tue</div>
+                <div class="header-cell">Wed</div>
+                <div class="header-cell">Thu</div>
+                <div class="header-cell">Fri</div>
+                <div class="header-cell">Sat</div>
+            </div>
+            <div id="trackerRows"></div>
+        </div>
+
+        <div class="instructions">
+            <h3>🎯 How to Use Your Iron Rod Scripture Reading Tracker</h3>
+            <ul>
+                <li><strong>Daily Reading:</strong> Click each day when you complete your scripture study</li>          
+                <li><strong>Streak Building:</strong> Try to read every day to build your longest streak!</li>
+                <li><strong>Goal:</strong> Complete both the Old Testament and Book of Mormon by December 31, 2026</li>
+				<li><strong>Streak Badges</strong> Reach a streak of 7 days for bronze; 30 days for silver; 90 days for gold; 180 days for the Iron Rod badge.</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+      
+
+        let completedDays = new Set();
+        let currentMonth = 'January';
+
+        function createTrackerGrid() {
+            const container = document.getElementById('trackerRows');
+            
+            // Create 52 weeks for the year
+            for (let week = 1; week <= 52; week++) {
+                const weekRow = document.createElement('div');
+                weekRow.className = 'week-row';
+                
+                // Week number
+                const weekNum = document.createElement('div');
+                weekNum.className = 'week-number';
+                weekNum.textContent = week;
+                weekRow.appendChild(weekNum);
+                
+                // 7 days
+                for (let day = 0; day < 7; day++) {
+                    const dayCell = document.createElement('div');
+                    dayCell.className = 'day-cell';
+                    dayCell.dataset.week = week;
+                    dayCell.dataset.day = day;
+                    dayCell.onclick = () => toggleDay(week, day);
+                    weekRow.appendChild(dayCell);
+                }
+                
+                container.appendChild(weekRow);
+            }
+        }
+
+        function toggleDay(week, day) {
+            const dayKey = `${week}-${day}`;
+            const dayCell = document.querySelector(`[data-week="${week}"][data-day="${day}"]`);
+            
+            if (completedDays.has(dayKey)) {
+                completedDays.delete(dayKey);
+                dayCell.classList.remove('completed');
+                dayCell.textContent = ''; // Remove checkmark
+            } else {
+                completedDays.add(dayKey);
+                dayCell.classList.add('completed');
+                dayCell.textContent = '✓'; // Add white checkmark
+            }
+            
+            updateStats();
+            saveProgress();
+        }
+
+        function updateStats() {
+            const totalDays = 365; // 2026 has 365 days
+            const daysCompleted = completedDays.size;
+            const yearComplete = Math.round((daysCompleted / totalDays) * 100);
+            
+            document.getElementById('daysCompleted').textContent = daysCompleted;
+            document.getElementById('yearComplete').textContent = yearComplete + '%';
+            
+            // Calculate streaks
+            const { currentStreak, longestStreak } = calculateStreaks();
+            document.getElementById('currentStreak').textContent = currentStreak;
+            document.getElementById('longestStreak').textContent = longestStreak;
+			// Update badge bar
+			updateBadge(currentStreak);
+        }
+
+		// ----------------------------------------------------------
+		// Badge Update Logic
+		// ----------------------------------------------------------
+		function updateBadge(currentStreak) {
+			const badgeIcon = document.getElementById('badgeIcon');
+			const badgeText = document.getElementById('badgeText');
+			const badgeBar = document.querySelector('.badge-bar');
+
+			if (!badgeIcon || !badgeText || !badgeBar) return;
+
+			// Hide badge bar when no streak
+			if (currentStreak === 0) {
+				badgeBar.classList.add('hidden');
+				return;
+			}
+
+			// Show badge bar once streak begins
+			badgeBar.classList.remove('hidden');
+
+			if (currentStreak >= 180) {
+				badgeIcon.textContent = "🏆";
+				badgeText.textContent = "Iron Rod Level — 180+ days!";
+			}
+			else if (currentStreak >= 90) {
+				badgeIcon.textContent = "🥇";
+				badgeText.textContent = "Gold Streak — 90 days!";
+			}
+			else if (currentStreak >= 30) {
+				badgeIcon.textContent = "🥈";
+				badgeText.textContent = "Silver Streak — 30 days!";
+			}
+			else if (currentStreak >= 7) {
+				badgeIcon.textContent = "🥉";
+				badgeText.textContent = "Bronze Streak — 7 days!";
+			}
+			else {
+				badgeIcon.textContent = "⏳";
+				badgeText.textContent = `Streak: ${currentStreak} day${currentStreak > 1 ? 's' : ''}`;
+			}
+		}
+
+
+
+        function calculateStreaks() {
+            const sortedDays = Array.from(completedDays)
+                .map(day => {
+                    const [week, dayNum] = day.split('-').map(Number);
+                    return (week - 1) * 7 + dayNum;
+                })
+                .sort((a, b) => a - b);
+            
+            let currentStreak = 0;
+            let longestStreak = 0;
+            let tempStreak = 0;
+            
+            // Calculate current streak from the most recent completed day backwards
+            if (sortedDays.length > 0) {
+                const lastDay = sortedDays[sortedDays.length - 1];
+                
+                // Count backwards from the most recent completed day
+                for (let i = lastDay; i >= 0; i--) {
+                    if (sortedDays.includes(i)) {
+                        currentStreak++;
+                    } else {
+                        break;
+                    }
+                }
+            }
+            
+            // Calculate longest streak
+            for (let i = 0; i < sortedDays.length; i++) {
+                if (i === 0 || sortedDays[i] === sortedDays[i-1] + 1) {
+                    tempStreak++;
+                } else {
+                    longestStreak = Math.max(longestStreak, tempStreak);
+                    tempStreak = 1;
+                }
+            }
+            longestStreak = Math.max(longestStreak, tempStreak);
+            
+            return { currentStreak, longestStreak };
+        }
+
+
+        function saveProgress() {
+            localStorage.setItem('ironRodProgress', JSON.stringify(Array.from(completedDays)));
+        }
+
+        function loadProgress() {
+            const saved = localStorage.getItem('ironRodProgress');
+            if (saved) {
+                completedDays = new Set(JSON.parse(saved));
+                completedDays.forEach(dayKey => {
+                    const [week, day] = dayKey.split('-');
+                    const dayCell = document.querySelector(`[data-week="${week}"][data-day="${day}"]`);
+                    if (dayCell) {
+                        dayCell.classList.add('completed');
+                        dayCell.textContent = '✓'; // Add white checkmark
+                    }
+                });
+                updateStats();
+            }
+        }
+
+        function resetTracker() {
+            console.log('Reset button clicked');
+            if (confirm('Are you sure you want to reset all progress? This cannot be undone.')) {
+                console.log('User confirmed reset');
+                console.log('Completed days before reset:', completedDays.size);
+                completedDays.clear();
+                console.log('Completed days after clear:', completedDays.size);
+                
+                const dayCells = document.querySelectorAll('.day-cell');
+                console.log('Found day cells:', dayCells.length);
+                dayCells.forEach(cell => {
+                    cell.classList.remove('completed');
+                    cell.textContent = ''; // Remove checkmarks
+                });
+                
+                updateStats();
+                localStorage.removeItem('ironRodProgress');
+                console.log('Reset completed');
+            } else {
+                console.log('User cancelled reset');
+            }
+        }
+		// Initialize
+		document.addEventListener('DOMContentLoaded', function() {
+			createTrackerGrid();
+			loadProgress();
+			updateStats();
+		});
+
+		// Dark Mode Toggle
+		const darkToggle = document.getElementById('darkModeToggle');
+		if (darkToggle) {
+			darkToggle.addEventListener('click', () => {
+				document.body.classList.toggle('dark-mode');
+				localStorage.setItem('darkMode',
+					document.body.classList.contains('dark-mode') ? '1' : '0'
+				);
+			});
+		}
+
+
+		// Load saved preference
+		if (localStorage.getItem('darkMode') === '1') {
+			document.body.classList.add('dark-mode');
+		}
+
+
+    </script>
+</body>
+</html>
